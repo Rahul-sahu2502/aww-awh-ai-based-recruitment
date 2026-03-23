@@ -1,0 +1,61 @@
+
+
+-- 1. Create the Audit Table: tbl_audit_post_vacancy_map
+CREATE TABLE `tbl_audit_post_vacancy_map` (
+    `audit_id` INT NOT NULL AUTO_INCREMENT, -- Unique ID for each audit entry
+    `original_post_vacancy_map` INT NOT NULL, -- The original primary key of the updated row
+    `old_fk_post_id` INT NOT NULL,
+    `old_fk_caste_id` INT NULL DEFAULT '0',
+    `old_no_of_vacancy` TINYINT NOT NULL DEFAULT '0',
+    `old_created_by` INT NOT NULL,
+    `old_updated_by` INT NOT NULL,
+    `old_created_at` TIMESTAMP NOT NULL,
+    `old_updated_at` TIMESTAMP NOT NULL,
+    `old_created_date` DATETIME NOT NULL,
+    `old_ip_address` VARCHAR(45) NOT NULL,
+    `audit_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- When the audit record was created
+    `audit_action` VARCHAR(10) NOT NULL DEFAULT 'DELETE', -- Type of action (e.g., 'DELETE')
+       PRIMARY KEY (`audit_id`) USING BTREE
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;
+
+-- 2. Create the BEFORE DELETE Trigger for post_vacancy_map
+DELIMITER //
+
+CREATE TRIGGER `trg_post_vacancy_map`
+BEFORE DELETE ON `post_vacancy_map`
+FOR EACH ROW
+BEGIN
+    INSERT INTO `tbl_audit_post_vacancy_map` (
+        `original_post_vacancy_map`,
+        `old_fk_post_id`,
+        `old_fk_caste_id`,
+        `old_no_of_vacancy`,
+        `old_created_by`,
+        `old_updated_by`,
+        `old_created_at`,
+        `old_updated_at`,
+        `old_created_date`,
+        `old_ip_address`
+    )
+    VALUES (
+        OLD.`post_vacancy_map`,
+        OLD.`fk_post_id`,
+        OLD.`fk_caste_id`,
+        OLD.`no_of_vacancy`,
+        OLD.`created_by`,
+        OLD.`updated_by`,
+        OLD.`created_at`,
+        OLD.`updated_at`,
+        OLD.`created_date`,
+        OLD.`ip_address`
+    );
+END //
+
+DELIMITER ;
+
+
+
+

@@ -1,0 +1,51 @@
+
+-- 1. Create the Audit Table: tbl_audit_post_organization_map
+CREATE TABLE `tbl_audit_post_organization_map` (
+    `audit_id` INT NOT NULL AUTO_INCREMENT, -- Unique ID for each audit entry
+    `original_post_organization_id` INT NOT NULL, -- The original primary key of the updated row
+    `old_fk_post_id` INT NOT NULL,
+    `old_fk_organization_type_id` INT NULL DEFAULT NULL,
+    `old_minimum_experiance_year` TINYINT NULL DEFAULT NULL,
+    `old_created_at` TIMESTAMP NULL,
+    `old_updated_at` TIMESTAMP NULL,
+    `old_created_date` DATETIME NULL,
+    `old_ip_address` VARCHAR(45) NULL,
+    `audit_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- When this audit record was created
+    `audit_action` VARCHAR(10) NOT NULL DEFAULT 'DELETE', -- Type of action (e.g., 'DELETE')
+    PRIMARY KEY (`audit_id`) USING BTREE
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;
+
+-- 2. Create the BEFORE DELETE Trigger for post_organization_map
+
+DELIMITER //
+
+CREATE TRIGGER `trg_post_organization_map`
+BEFORE DELETE ON `post_organization_map`
+FOR EACH ROW
+BEGIN
+    INSERT INTO `tbl_audit_post_organization_map` (
+        `original_post_organization_id`,
+        `old_fk_post_id`,
+        `old_fk_organization_type_id`,
+        `old_minimum_experiance_year`,
+        `old_created_at`,
+        `old_updated_at`,
+        `old_created_date`,
+        `old_ip_address`
+    )
+    VALUES (
+        OLD.`post_organization_id`,
+        OLD.`fk_post_id`,
+        OLD.`fk_organization_type_id`,
+        OLD.`minimum_experiance_year`,
+        OLD.`created_at`,
+        OLD.`updated_at`,
+        OLD.`created_date`,
+        OLD.`ip_address`
+        );
+END //
+
+DELIMITER ;

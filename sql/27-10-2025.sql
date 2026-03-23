@@ -1,0 +1,2 @@
+INSERT INTO `master_post_questions` ( `ques_name`, `answer_options`, `parent_id`, `parent_ans`, `ans_type`, `ques_order_id`, `is_active`, `is_weightage_marks`, `ip_address`) 
+VALUES ( 'क्या आपने अनुसूचित जाति /जनजाति विभाग द्वारा संचालित कन्या आश्रम में आठवीं तक अध्ययन किया है?', '["हाँ", "नहीं"]', NULL, NULL, 'O', 14, '1', '1', '127.0.0.1');

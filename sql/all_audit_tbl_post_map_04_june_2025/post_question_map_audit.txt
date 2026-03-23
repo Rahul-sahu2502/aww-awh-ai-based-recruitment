@@ -1,0 +1,46 @@
+
+-- 1. Create the Audit Table: tbl_audit_post_question_map
+CREATE TABLE `tbl_audit_post_question_map` (
+    `audit_id` INT NOT NULL AUTO_INCREMENT, -- Unique ID for each audit entry
+    `original_post_map_id` INT NOT NULL, -- The original primary key of the updated row
+    `old_fk_post_id` INT NOT NULL,
+    `old_fk_ques_id` INT NOT NULL,
+    `old_created_at` TIMESTAMP NULL,
+    `old_ip_address` VARCHAR(45) NOT NULL COLLATE 'utf8mb4_general_ci',
+    `old_deleted_at` TIMESTAMP NULL,
+    `audit_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- When the audit record was created
+    `audit_action` VARCHAR(10) NOT NULL DEFAULT 'UPDATE', -- Type of action (e.g., 'UPDATE')
+    PRIMARY KEY (`audit_id`) USING BTREE
+)
+COLLATE='utf8mb4_general_ci'
+ENGINE=InnoDB
+;
+
+-- 2. Create the BEFORE UPDATE Trigger for post_question_map
+-- This trigger will automatically insert the OLD row's data into the audit table
+-- before any update operation on the post_question_map table.
+DELIMITER //
+
+CREATE TRIGGER `trg_post_question_map`
+BEFORE UPDATE ON `post_question_map`
+FOR EACH ROW
+BEGIN
+    INSERT INTO `tbl_audit_post_question_map` (
+        `original_post_map_id`,
+        `old_fk_post_id`,
+        `old_fk_ques_id`,
+        `old_created_at`,
+        `old_ip_address`,
+        `old_deleted_at`
+    )
+    VALUES (
+        OLD.`post_map_id`,
+        OLD.`fk_post_id`,
+        OLD.`fk_ques_id`,
+        OLD.`created_at`,
+        OLD.`ip_address`,
+        OLD.`deleted_at`
+    );
+END //
+
+DELIMITER ;

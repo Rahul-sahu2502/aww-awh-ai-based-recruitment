@@ -1,0 +1,1 @@
+UPDATE `recruitment_aww_awh`.`master_post_questions` SET `ques_name`='क्या आप पूर्व में आंगनबाड़ी कार्यकर्ता, सहायिका, सह सहायिका, संगठिका के पद पर कार्यरत थे ?\r\n' WHERE  `ques_ID`=9;
